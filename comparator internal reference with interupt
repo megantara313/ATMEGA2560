@@ -1,0 +1,29 @@
+#include<avr/io.h>
+#include <util/delay.h>
+#include <avr/interrupt.h>
+
+ISR (ANALOG_COMP_vect)
+  {
+  PORTB |= _BV(PB7);
+  _delay_ms(200);
+  PORTB &= ~_BV(PB7);
+  _delay_ms(200);
+  }
+
+int main()
+{
+  DDRB |= _BV(DDB7);    // Set PB7 as output
+  ADCSRB &= ~_BV(ACME);  // disable ACME(Analog Comparator Multiplexer Enable)
+  ACSR |=    _BV(ACBG)     // compare to internal Bandgap reference
+      | _BV (ACI)     // (Clear) Analog Comparator Interrupt Flag
+          | _BV (ACIE)    // Analog Comparator Interrupt Enable
+          | _BV (ACIS1)  // ACIS1, ACIS0: Analog Comparator Interrupt Mode Select (trigger on falling edge)
+          | (0<<ACD)   //  enable comparator
+          |(0<<ACIC);  // input capture disabled
+  DIDR1  |=  (1<< AIN1D); //disable buffer register
+  sei();
+  while(1)
+  {
+  }
+  return 0;
+}
