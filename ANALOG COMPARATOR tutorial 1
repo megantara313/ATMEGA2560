@@ -1,0 +1,20 @@
+//in this tutor i will show you how to make a program that utilizes a comparator.
+//the code script is below.
+#include<avr/io.h>
+
+int main()
+{
+  DDRB |= _BV(DDB7);    // Set PB7 as output
+  ADCSRB &= ~_BV(ACME);  // disable ACME(Analog Comparator Multiplexer Enable)
+  ACSR |= _BV(ACBG);     // compare to internal Bandgap reference
+  ACSR &= ~_BV(ACD);    //  enable comparator
+  while(1)
+  {
+    if(ACSR&(1<<ACO))    // Test if ACO is set
+      PORTB &= ~_BV(PB7);  // Turn LED OFF  - if ACO = 1
+    else
+      PORTB |= _BV(PB7);  // Turn LED ON - if ACO = 0
+  }
+  return 0;
+}
+
