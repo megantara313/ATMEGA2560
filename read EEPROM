@@ -1,0 +1,15 @@
+#include <avr/io.h>
+#include <avr/eeprom.h>
+#include <util/delay.h>
+int main (void)
+{
+  DDRA=0xFF;
+  for(int i=0;i<=7;i++)
+  {
+    PORTA=eeprom_read_byte((uint8_t*)i);
+    _delay_ms(400);
+  }
+  while(1)
+  {
+  }
+}
