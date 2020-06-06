@@ -1,0 +1,20 @@
+
+
+
+
+/#include <avr/interrupt.h>
+    //4. tambahkan interrupsi service rutin sebagai berikut:
+ISR(ADC_vect)
+{
+   // Code to be executed when ISR fires
+  dataADC=ADCH;
+  PORTA=~dataADC;  //barled aktif low
+}
+    5. pada main aktifkan interrupsi sebagai berikut:
+  ADCSRA |= (1 << ADIE);
+  sei();
+    6. hilangkan kode program loop menjadi seperti berikut:
+  while(1)        //loop-forever
+  {
+
+  }
