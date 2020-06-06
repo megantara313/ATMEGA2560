@@ -1,8 +1,9 @@
+/********************************************************/
+//example
 
 
-
-
-/#include <avr/interrupt.h>
+/*******************************************************
+#include <avr/interrupt.h>
     //4. tambahkan interrupsi service rutin sebagai berikut:
 ISR(ADC_vect)
 {
@@ -17,4 +18,62 @@ ISR(ADC_vect)
   while(1)        //loop-forever
   {
 
+  }********************************************************/
+
+//second ver-------------------
+#include <avr/io.h>
+#include <util/delay.h>
+#include <avr/interrupt.h>
+unsigned int dataADC=0;
+unsigned char channel=0;
+
+ISR(ADC_vect)
+{
+   // Code to be executed when ISR fires
+  dataADC=ADCH;
+  PORTA=~dataADC;  //barled aktif low
+}
+
+int main(void)
+{
+  DDRA=0xFF;
+  ADCSRA |= (1<<ADATE); // auto trigger  base on trigger source enable
+  ADCSRA |= (1<<ADPS2)|(1<<ADPS1); //setting prescaller
+  ADCSRB &= ~(_BV(ADTS2)|_BV(ADTS1)|_BV(ADTS0));  //freerunning Mode
+  ADMUX  |= ( 1 << ADLAR ) ; // configure  8 bit data from adch
+  ADMUX  |=  _BV(REFS0) | channel;   //get ref from VCC & activate channel 0
+  ADCSRA |= (1<< ADEN);  // enable ADC
+  ADCSRA |= (1<<ADSC); // Start first conversion
+  ADCSRA |= (1 << ADIE);
+  sei();
+  while(1)        //loop-forever
+  {
+
   }
+}
+
+
+
+//----third ver------------------------------------------------
+
+#include <avr/io.h>
+#include <util/delay.h>
+unsigned int dataADC=0;
+unsigned char channel=0;
+
+int main(void)
+{
+  DDRA=0xFF;
+  ADCSRA |= (1<<ADPS2)|(1<<ADPS1); //setting prescaller
+  ADMUX  |= ( 1 << ADLAR ) ; // configure  8 bit data from adch
+  ADMUX  |=  _BV(REFS0) | channel;   //get ref from VCC & activate channel 0
+  ADCSRA |= (1<< ADEN);  // enable ADC
+  while(1)        //loop-forever
+  {
+    ADCSRA |= (1<<ADSC);  //Start ADC
+    while (!(ADCSRA&(1<<ADIF))); /* wait for complete conversion */
+    ADCSRA |= (1<<ADIF); //clear flag
+    dataADC=ADCH;
+    PORTA=~dataADC;  //barled aktif low
+  }
+}
